@@ -19,7 +19,7 @@ green 'Compress files...'
 find $dst \( -iname '*.html' -o -iname '*.css' -o -iname '*.js' \) -exec gzip -9 -nv {} \; -exec mv {}.gz {} \;
 
 green 'Sync css...'
-aws s3 sync $dst $bkt --exclude '*' --include '*.css' --recursive --delete --cache-control "$cacheControl" --conent-type 'text/css' --content-encoding 'gzip' 
+aws s3 sync $dst $bkt --size-only --exclude '*' --include '*.css' --recursive --delete --cache-control "$cacheControl" --conent-type 'text/css' --content-encoding 'gzip' 
 
 green 'Sync js...'
 aws s3 sync $dst $bkt --size-only --exclude '*' --include '*.js' --recursive --delete --cache-control "$cacheControl" --conent-type 'application/javascript' --content-encoding 'gzip'
