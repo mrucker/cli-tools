@@ -2,9 +2,10 @@
 src="$1"
 dst="$2"
 bkt="$3"
+age="$4"
 
 daySeconds=$(expr 24 \* 60 \* 60)
-cacheControl="no-transform, public, max-age=$daySeconds, s-maxage=$daySeconds"
+cacheControl="no-transform, public, max-age=$age, s-maxage=$age"
 
 green () {
     local GREEN='\033[0;32m'
