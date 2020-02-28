@@ -1,10 +1,11 @@
-cd $MY_PROJECTS_DIR
+cd $PROJECTS
 
-$ENV:PATH   += "$MY_TOOLS_DIR\cURL\bin;"
-$ENV:PATH   += "$MY_TOOLS_DIR\nuget\;"
+$ENV:PATH += "$TOOLS\cURL\bin;"
+$ENV:PATH += "$TOOLS\7-Zip\Application\;"
+$ENV:PATH += "$env:appdata\npm\;"
 
 New-Alias ex C:\Windows\explorer.exe
-New-Alias n++ "$MY_TOOLS_DIR\Notepad++\Notepad++.exe"
+New-Alias n++ "$TOOLS\Notepad++\Notepad++.exe"
 
 Set-PSReadlineOption -BellStyle None
 
