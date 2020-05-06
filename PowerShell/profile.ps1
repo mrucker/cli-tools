@@ -1,5 +1,1 @@
-$PROJECTS = "$HOME\Projects"
-$TOOLS    = "$HOME\Tools"
-$DESKTOP  = "$HOME\Desktop"
-
-Import-Module 'Startup'
+Import-Module 'base'
