@@ -3,35 +3,48 @@
 
 bucket="$1"
 maxage="$2"
+site="./_site"
 
-src="."
-dst="./_site"
+[[ -d "$site" ]] || { echo >&2 "not currently in the root of a jekyll project"; exit 1; }
 
-cacheControl="no-transform, public, max-age=$maxage, s-maxage=$maxage"
+cache="no-transform, public, max-age=$maxage, s-maxage=$maxage"
 
 green () {
-    local GREEN='\033[0;32m'
-    local NOCOLOR='\033[0m'
-    echo -e "${GREEN}${*}${NOCOLOR}"
+    local GREEN='\e[0;32m'
+    local NOCOLOR='\e[0m'
+    echo -e "${GREEN}$*${NOCOLOR}"
+}
+
+compress() {
+    # add -v to gzip call for more messages
+    find "$site" -iname "$1" -exec gzip -9 -n "{}" \; -exec mv "{}.gz" "{}" \;
+}
+
+sync() {
+    aws s3 sync "$site" "$bucket" --exclude "*" --include "$1" --cache-control "$2" --content-encoding "$3" --content-type "$4" --delete --quiet
 }
 
 green 'Jekyll build...'
-jekyll build -s "$src" -d "$dst"
+jekyll build
 
 green 'Compressing files...'
-find "$dst" \( -iname '*.html' -o -iname '*.css' -o -iname '*.js' \) -exec gzip -9 -n "{}" \; -exec mv "{}.gz" "{}" \;
+compress '*.html'
+compress '*.css'
+compress '*.js'
 
 green 'Syncing css...'
-aws s3 sync "$dst" "$bucket" --exclude '*' --include '*.css*' --delete --cache-control "$cacheControl" --content-type "text/css" --content-encoding "gzip" --quiet
+sync '*.css' "$cache" 'gzip' 'text/css'
 
 green 'Syncing js...'
-aws s3 sync "$dst" "$bucket" --exclude '*' --include '*.js' --delete --cache-control "$cacheControl" --content-type 'application/javascript' --content-encoding 'gzip' --quiet
+sync '*.js' "$cache" 'gzip' 'application/javascript'
 
 green 'Syncing html...'
-aws s3 sync "$dst" "$bucket" --exclude '*' --include '*.html' --delete --cache-control 'no-cache' --content-type 'text/html' --content-encoding 'gzip' --quiet
+sync '*.html' 'no-cache' 'gzip' 'text/html'
 
 green 'Syncing images...'
-aws s3 sync "$dst" "$bucket" --exclude '*' --include '*.jpg' --include '*.png' --include '*.ico' --delete --cache-control "$cacheControl" --quiet
+sync '*.jpg' "$cache" 'identity' 'image/jpeg'
+sync '*.png' "$cache" 'identity' 'image/png'
+sync '*.ico' "$cache" 'identity' 'image/vnd.microsoft.icon'
 
-green 'Syncing all other files...'
-aws s3 sync "$dst" "$bucket" --exclude '*.css*' --exclude '*.js' --exclude '*.html' --exclude '*.jpg' --exclude '*.png' --exclude '*.ico'  --exact-timestamps --delete --quiet
+#green 'Syncing all other files...'
+#aws s3 sync "$dst" "$bucket" --exclude '*.css*' --exclude '*.js' --exclude '*.html' --exclude '*.jpg' --exclude '*.png' --exclude '*.ico'  --exact-timestamps --delete --quiet
