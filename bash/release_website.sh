@@ -2,7 +2,7 @@
 #This has been tested against aws cli 1.7.45 and jekyll 2.5.3
 
 bucket="$1"
-maxage="$2"
+maxage=86400
 site="./_site"
 
 [[ -d "$site" ]] || { echo >&2 "not currently in the root of a jekyll project"; exit 1; }
