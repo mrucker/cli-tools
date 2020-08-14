@@ -5,8 +5,8 @@ $DESKTOP  = "$HOME\Desktop"
 $specifyDirCommands  = '\b(Set-Location|sl|cd|chdir|Push-Location|pushd|pul)\b'
 $specifyDirArguments ='^-(WorkingDirectory|wd|wo|wor|work)'
 
-$dirSpecifiedByCommand  = [Environment]::CommandLine -match $set_dir_comands
-$dirSpecifiedByArgument = $PSVersionTable.PSEdition -ne 'Desktop' -and [Environment]::GetCommandLineArgs() -match $set_dir_arguments
+$dirSpecifiedByCommand  = [Environment]::CommandLine -match $specifyDirCommands
+$dirSpecifiedByArgument = $PSVersionTable.PSEdition -ne 'Desktop' -and [Environment]::GetCommandLineArgs() -match $specifyDirArguments
 
 $dirSpecified = $dirSpecifiedByCommand -or $dirSpecifiedByArgument
 
